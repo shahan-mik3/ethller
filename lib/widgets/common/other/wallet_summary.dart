@@ -1,10 +1,23 @@
 import 'package:ethller/pages/home/home_subpages/wallet/bloc/wallet_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:async/async.dart';
+import 'package:money_converter/money_converter.dart';
+import 'package:money_converter/Currency.dart';
 
 import 'custom_container.dart';
 
 class WalletSummary extends StatelessWidget {
+
+  final AsyncMemoizer memoizer = AsyncMemoizer();
+
+  _fetchData() {
+    return this.memoizer.runOnce(() async {
+      return MoneyConverter.convert(
+          Currency(Currency.USD), Currency(Currency.INR));
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return CustomContainer(
@@ -68,13 +81,15 @@ class WalletSummary extends StatelessWidget {
                       ),
                       Row(
                         children: [
+    FutureBuilder(future: _fetchData(), builder: (context, snapshot) {
+      return Text(
+        ((snapshot.hasData ? snapshot.data : 0) * (state.wallet.inUSD)).toStringAsFixed(2),
+        style: TextStyle(
+            color: Colors.grey[500], fontSize: 14),
+      );
+    }),
                           Text(
-                            state.wallet.inUSD.toStringAsFixed(2),
-                            style: TextStyle(
-                                color: Colors.grey[500], fontSize: 14),
-                          ),
-                          Text(
-                            ' USD',
+                            ' INR',
                             style: TextStyle(
                                 color: Colors.grey[500], fontSize: 13),
                           ),

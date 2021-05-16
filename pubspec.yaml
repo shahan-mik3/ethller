@@ -39,6 +39,8 @@ dependencies:
   qr_code_scanner: ^0.3.0
   shared_preferences: ^0.5.12+4
   url_launcher: ^5.7.10
+  money_converter: ^0.0.3
+  money2: ^2.0.3
 
 dev_dependencies:
   flutter_test:

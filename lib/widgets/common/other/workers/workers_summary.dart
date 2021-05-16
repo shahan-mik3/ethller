@@ -72,9 +72,9 @@ class _MinersSummaryData extends StatelessWidget {
       }
       denominator = miner.currentStats.activeWorkers;
       numerator = miner.history.last.activeWorkers;
-      currentHashrate = miner.currentStats.currentHashrate;
-      reportedHashrate = miner.currentStats.reportedHashrate;
-      averageHashrate = miner.currentStats.averageHashrate;
+      currentHashrate = miner.currentStats.currentHashrate ?? 0.00;
+      reportedHashrate = miner.currentStats.reportedHashrate ?? 0.00;
+      averageHashrate = miner.currentStats.averageHashrate ?? 0.00;
     }
 
     return CustomContainer(
