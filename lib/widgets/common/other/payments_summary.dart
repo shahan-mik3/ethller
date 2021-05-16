@@ -3,8 +3,14 @@ import 'package:ethller/widgets/common/charts/radial_progress.dart';
 import 'package:ethller_api_interface/ethller_api_interface.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:money_converter/money_converter.dart';
+import 'package:money_converter/Currency.dart';
+import 'package:money2/money2.dart' as Money;
+import 'package:async/async.dart';
 
 import 'custom_container.dart';
+
+
 
 class PaymentsSummary extends StatelessWidget {
   @override
@@ -44,11 +50,19 @@ class PaymentsSummary extends StatelessWidget {
 
 class _PaymentSummaryItem extends StatelessWidget {
   final Miner miner;
+  final AsyncMemoizer memoizer = AsyncMemoizer();
 
-  const _PaymentSummaryItem({
+  _PaymentSummaryItem({
     Key key,
     this.miner,
   }) : super(key: key);
+
+  _fetchData() {
+    return this.memoizer.runOnce(() async {
+      return MoneyConverter.convert(
+          Currency(Currency.USD), Currency(Currency.INR));
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -60,7 +74,7 @@ class _PaymentSummaryItem extends StatelessWidget {
       unpaidBalance = (miner.currentStats?.unpaid ?? 0);
       porcentaje = (unpaidBalance * 100) / miner.minPayout;
       usdPerMin = miner.currentStats.usdPerMin;
-      btcPerMin = miner.currentStats.btcPerMin;
+      btcPerMin = miner.currentStats.coinsPerMin;
     }
     return Column(
       children: [
@@ -129,44 +143,67 @@ class _PaymentSummaryItem extends StatelessWidget {
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text('USD:', style: Theme.of(context).textTheme.headline1.copyWith(fontSize: 20)),
+                  Text('INR:', style: Theme.of(context).textTheme.headline1.copyWith(fontSize: 20)),
                   SizedBox(height: 5),
                   Row(
                     children: [
                       Text('Day: '),
-                      Text(
-                        '\$${(usdPerMin * 1440).toStringAsFixed(2)}',
-                        style: TextStyle(
-                          color: Color(0xff02d39a),
-                        ),
-                        overflow: TextOverflow.ellipsis,
-                      ),
+                      FutureBuilder(future: _fetchData(), builder: (context, snapshot) {
+                        Money.Currency usdCurrency = Money.Currency.create('INR', 2,
+                            symbol: '₹', invertSeparators: false, pattern: 'S00.00');
+                        // Create money from an int.
+                        //print("Money ${snapshot.data * usdPerMin * 1440}");
+                        Money.Money costPrice = usdCurrency.parse(snapshot.hasData ? (snapshot.data * usdPerMin * 1440).toStringAsFixed(2) : "0.00", pattern: "0.00");
+                        return Text(
+                          '${costPrice.toString()}',
+                          style: TextStyle(
+                            color: Color(0xff02d39a),
+                          ),
+                          overflow: TextOverflow.ellipsis,
+                        );
+                      }),
                     ],
                   ),
                   SizedBox(height: 4),
                   Row(
                     children: [
                       Text('Week: '),
-                      Text(
-                        '\$${(usdPerMin * 10080).toStringAsFixed(2)}',
-                        style: TextStyle(
-                          color: Color(0xff02d39a),
-                        ),
-                        overflow: TextOverflow.ellipsis,
-                      ),
+    FutureBuilder(future: _fetchData(), builder: (context, snapshot) {
+      Money.Currency usdCurrency = Money.Currency.create('INR', 2,
+          symbol: '₹', invertSeparators: false, pattern: 'S00.00');
+      // Create money from an int.
+      Money.Money costPrice = usdCurrency.parse(snapshot.hasData ? (snapshot
+          .data * usdPerMin * 10080).toStringAsFixed(2) : "0.00", pattern: "0.00");
+      return
+        Text(
+          '${costPrice.toString()}',
+          style: TextStyle(
+            color: Color(0xff02d39a),
+          ),
+          overflow: TextOverflow.ellipsis,
+        );
+    }),
                     ],
                   ),
                   SizedBox(height: 4),
                   Row(
                     children: [
                       Text('Month: '),
-                      Text(
-                        '\$${(usdPerMin * 43200).toStringAsFixed(2)}',
-                        style: TextStyle(
-                          color: Color(0xff02d39a),
-                        ),
-                        overflow: TextOverflow.ellipsis,
-                      ),
+    FutureBuilder(future: _fetchData(), builder: (context, snapshot) {
+      Money.Currency usdCurrency = Money.Currency.create('INR', 2,
+          symbol: '₹', invertSeparators: false, pattern: 'S00.00');
+      // Create money from an int.
+      Money.Money costPrice = usdCurrency.parse(
+          snapshot.hasData ? (snapshot.data * usdPerMin * 43200).toStringAsFixed(2) : "0.00", pattern: "0.00");
+      return
+        Text(
+          '${costPrice.toString()}',
+          style: TextStyle(
+            color: Color(0xff02d39a),
+          ),
+          overflow: TextOverflow.ellipsis,
+        );
+    }),
                     ],
                   ),
                 ],
@@ -175,7 +212,7 @@ class _PaymentSummaryItem extends StatelessWidget {
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text('BTC:', style: Theme.of(context).textTheme.headline1.copyWith(fontSize: 20)),
+                  Text('ETH:', style: Theme.of(context).textTheme.headline1.copyWith(fontSize: 20)),
                   SizedBox(height: 5),
                   Row(
                     children: [

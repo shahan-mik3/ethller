@@ -5,6 +5,9 @@ import 'package:ethller/widgets/common/other/wallet_summary.dart';
 import 'package:ethller_api_interface/ethller_api_interface.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:async/async.dart';
+import 'package:money_converter/money_converter.dart';
+import 'package:money_converter/Currency.dart';
 
 class WalletPage extends StatelessWidget {
   @override
@@ -103,12 +106,21 @@ class _TxsList extends StatelessWidget {
 class _TxCard extends StatelessWidget {
   final WalletTransaction tx;
   final String walletId;
+  final AsyncMemoizer memoizer = AsyncMemoizer();
 
-  const _TxCard({
+  _TxCard({
     Key key,
     @required this.tx,
     @required this.walletId,
   }) : super(key: key);
+
+  _fetchData() {
+    return this.memoizer.runOnce(() async {
+      return MoneyConverter.convert(
+          Currency(Currency.USD), Currency(Currency.INR));
+    });
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -168,7 +180,7 @@ class _TxCard extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Row(
-                crossAxisAlignment: CrossAxisAlignment.baseline,
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
                     tx.value.toStringAsFixed(8),
@@ -188,18 +200,20 @@ class _TxCard extends StatelessWidget {
                 ],
               ),
               Row(
-                crossAxisAlignment: CrossAxisAlignment.baseline,
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    inUsd.toStringAsFixed(2),
+                FutureBuilder(future: _fetchData(), builder: (context, snapshot) {
+                  return Text(
+                    ((snapshot.hasData ? snapshot.data : 0) * inUsd).toStringAsFixed(2),
                     style: TextStyle(
                       color: Colors.grey[400],
                       fontSize: 15,
                       fontWeight: FontWeight.w300,
                     ),
-                  ),
+                  );
+                }),
                   Text(
-                    ' USD',
+                    ' INR',
                     style: TextStyle(
                       color: Colors.grey[400],
                       fontSize: 14,

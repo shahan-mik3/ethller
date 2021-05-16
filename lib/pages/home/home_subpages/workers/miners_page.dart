@@ -136,7 +136,7 @@ class _MinerBoxItem extends StatelessWidget {
               Spacer(),
               Row(
                 mainAxisAlignment: MainAxisAlignment.start,
-                crossAxisAlignment: CrossAxisAlignment.baseline,
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
                     worker.currentHashrate > 999
@@ -169,7 +169,7 @@ class _MinerBoxItem extends StatelessWidget {
               Spacer(),
               Row(
                 mainAxisAlignment: MainAxisAlignment.start,
-                crossAxisAlignment: CrossAxisAlignment.baseline,
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
                     worker.reportedHashrate > 999
@@ -202,7 +202,7 @@ class _MinerBoxItem extends StatelessWidget {
               Spacer(),
               Row(
                 mainAxisAlignment: MainAxisAlignment.start,
-                crossAxisAlignment: CrossAxisAlignment.baseline,
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
                     worker.averageHashrate > 999
